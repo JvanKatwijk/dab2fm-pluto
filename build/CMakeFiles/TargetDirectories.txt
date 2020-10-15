@@ -1,8 +1,0 @@
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/install/strip.dir
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/install/local.dir
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/install.dir
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/list_install_components.dir
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/rebuild_cache.dir
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/edit_cache.dir
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/uninstall.dir
-/usr/shared/sdr-j-development/systems/dab-pluto-fm/build/CMakeFiles/dab_pluto-fm.dir
