@@ -108,7 +108,7 @@ void	dabStreamer::stop (void) {
 
 void	dabStreamer::audioOutput (float *v, int amount) {
 	while (pcmBuffer. GetRingBufferWriteAvailable () < 2 * amount)
-	   usleep (1000);
+	   usleep (400);
 	pcmBuffer. putDataIntoBuffer (v, 2 * amount);
 }
 
@@ -129,7 +129,8 @@ int     error;
 
 uint64_t        nextStop;
 SRC_STATE       *converter =
-	                src_new (SRC_SINC_MEDIUM_QUALITY, 2, &error);
+	                src_new (SRC_LINEAR, 2, &error);
+//	                src_new (SRC_SINC_MEDIUM_QUALITY, 2, &error);
 SRC_DATA        *src_data =
 	                new SRC_DATA;
 
@@ -183,6 +184,8 @@ SRC_DATA        *src_data =
 	      group	= rds_group_schedule ();
 	   }
 
+	   while (pcmBuffer. GetRingBufferReadAvailable () < bufferSize)
+	      usleep (1000);
 	   readCount	= pcmBuffer. getDataFromBuffer (bi. data (),
 	                                                        bufferSize);
 	   src_data     -> input_frames         = readCount / 2;
@@ -305,7 +308,7 @@ int	i;
 	   else
 	      sample	= preemp (samp_s.l);
 
-	   nextPhase += 8 * sample;
+	   nextPhase += 4 * sample;
 	   if (nextPhase >= 2 * M_PI)
 	      nextPhase -= 2 * M_PI;
 	   if (nextPhase < 0)

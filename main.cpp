@@ -148,7 +148,7 @@ void	audioOutHandler (int16_t *buffer, int size, int rate,
 static bool isStarted	= false;
 
 	streamerOut	-> audioOut (buffer, size, rate);
-	if (!localSound. load ();
+	if (!localSound. load ());
 	   return;
 	(void)isStereo;
 	if (!isStarted) {

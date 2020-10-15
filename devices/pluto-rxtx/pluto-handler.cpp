@@ -169,7 +169,7 @@ SF_INFO	sf_info;
 	                             int32_t	fmFrequency):
 	                               deviceHandler (b),
 	                               _O_Buffer (8 * 128 * 32768),
-	                               theFilter (5, 192000, FM_RATE) {
+	                               theFilter (7, 192000, FM_RATE) {
 	this	-> _I_Buffer		= b;
 	this	-> ctx			= nullptr;
 	this	-> rxbuf		= nullptr;
