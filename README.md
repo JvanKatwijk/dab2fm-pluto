@@ -1,6 +1,6 @@
 
 -------------------------------------------------------------------------
-Pluto gadget: dab-pluto-fm,  from DAB(+) to  stereo FM
+Pluto gadget: dab-pluto-fm,  from DAB(+) to  stereo FM using the Pluto
 -------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------
@@ -28,8 +28,10 @@ as SDR device, connected to my software.
 
 The Adalm Pluto is a device with both receiver and transmit capabilities.
 In the process of "learning", after all, it is an *active learning module*,
-I extended the command line version of the dab decoder with a transmitter
-for the output.
+I extended the command line version of the dab decoder with a module
+to transmit the audio output on a user defined frequency, as stereo signal,
+on the same pluto device.
+
 Since DAB audio services are usually in stereo, and equipped with a
 dynamic label, the audio of the selected service is re-transmitted
 as a stereo signal.
@@ -50,7 +52,7 @@ of the computer on which the program runs - transmits the audio - extended
 with the text of the dynamic label as RDS message on a frequency, set
 in the command line.
 
-	thePluto -C 12C -P "NPO Radio 4" -Q -F 110000
+	dab-pluto-fm -C 12C -P "NPO Radio 4" -Q -F 110000
 
 The parameters are mostly as in the examples for dab-cmdline,
 
@@ -59,15 +61,12 @@ The parameters are mostly as in the examples for dab-cmdline,
 	c. -G for setting the gain, or
 	d. -Q for setting the agc;
 	e. -F for setting the output frequency (in KHz).
+	f. -S for audio out next to transmitting the audio
 
 Other parameters are
 
-	f. -d for specifying the maximum amount of time to wait for time synchronization;
-	g. -D for specifying the maximul amount of time to wait for detecting an ensemble;
-
-	h. -B for specifying the band (note that DAB(+) is now only transmitted in Band III, which is the default.)
-
-	g. -M for specifying the Mode (note that DAB(+) is now only transmitted in Mode 1);
+	g. -d for specifying the maximum amount of time to wait for time synchronization;
+	h. -D for specifying the maximul amount of time to wait for detecting an ensemble;
 
 ---------------------------------------------------------------------------
 Building an executable
