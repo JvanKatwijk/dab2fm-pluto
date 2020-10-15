@@ -4,37 +4,40 @@ Pluto gadget: dab-pluto-fm,  from DAB(+) to  stereo FM using the Pluto
 -------------------------------------------------------------------------
 
 ---------------------------------------------------------------------------
-THIS SOFTWARE IS EXPERIMENTAL AND FAR FROM COMPLETE
+THIS SOFTWARE IS EXPERIMENTAL AND NOT YET COMPLETE
 ---------------------------------------------------------------------------
 
 For the real hobbyist, nothing is better than the sound of an old(er) radio,
 preferably one with tubes in a nice, wooden cabinet.
-From the early 60-ies, there are plenty of stereo radios,
-built with tubes, on the (second hand) market.
+From the early 60-ies, there are plenty of stereo radios, built with tubes,
+on the (second hand) market (or somehwere on the attick)
 
-The medium waves, while not empty, are hardly occupied with
+The medium waves, while not completely empty, are hardly occupied with
 regional or national transmissions, and from time to time one hears rumours
 that the end of broadcasting in FM is also nearing. So, most of the
 real beautiful wooden radios are basically now, or in the near future,
 useless.
 
-On the other hand, the development of digital radio  goes fast.
+On the other hand, the development of digital radio goes fast.
 Recently, here in the Netherlands, next to national and regional DAB
 transmissions, also local DAB transmissions started.
 
 Currently, I can receive around 5 or 6 ensembles, with in total
-over 60 services on a simple whip antenna, using e.g. the Adalm pluto
-as SDR device, connected to my software.
+over 60 services on a simple whip antenna, with e.g. the Adalm pluto or the SDRplay
+as SDR device, using my software.
 
-The Adalm Pluto is a device with both receiver and transmit capabilities.
+The *Adalm Pluto* is a device with both receive and transmit capabilities.
 In the process of "learning", after all, it is an *active learning module*,
 I extended the command line version of the dab decoder with a module
-to transmit the audio output on a user defined frequency, as stereo signal,
-on the same pluto device.
-
-Since DAB audio services are usually in stereo, and equipped with a
+to transmit the audio output on a user defined frequency,
+on the same pluto device.Since DAB audio services are usually in stereo, and equipped with a
 dynamic label, the audio of the selected service is re-transmitted
 as a stereo signal.
+
+While the picturen shows the reception of the transmitted signal
+using my fm decoding software (with the SDRplay and the pluto close to each other),
+attaching a (small) antenna makes reception with a nice wooden cabinet tube radio
+with FM stereo possible.
 
 ![fm receiver](/dab-to-fm.png?raw=true)
 
