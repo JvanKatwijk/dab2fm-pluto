@@ -306,7 +306,7 @@ int	i;
 	      sample		= 0.50	* lpr +
 	                          0.05	* pilot +
 	                          0.40	* lmr * carrier + 
-	                          4.90	* sym * rds_carrier;
+	                          8.90	* sym * rds_carrier;
 
 	      symclk_p	= symclk;
 	   }
