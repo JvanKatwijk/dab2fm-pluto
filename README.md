@@ -41,6 +41,10 @@ with FM stereo possible.
 
 ![fm receiver](/dab-to-fm.png?raw=true)
 
+The experiment relates mainly to finding the right (relative) values
+for constructing the FM vsignal, especially the parameter to boost the
+rds part of the signal.
+
 ----------------------------------------------------------------------
 The program
 -----------------------------------------------------------------------
