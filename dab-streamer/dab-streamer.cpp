@@ -36,6 +36,7 @@
 #include	<sys/time.h>
 #include	<unistd.h>
 #include	<vector>
+#include	"up-filter.h"
 #include	"dab-streamer.h"
 #include	"pluto-handler.h"
 static inline
@@ -126,7 +127,7 @@ int     bufferSize;
 std::vector<float>      bi (0);
 std::vector<float>      bo (0);
 int     error;
-
+upFilter	theFilter (15, inRate, outRate);
 uint64_t        nextStop;
 SRC_STATE       *converter =
 	                src_new (SRC_LINEAR, 2, &error);
@@ -188,10 +189,17 @@ SRC_DATA        *src_data =
 	      usleep (1000);
 	   readCount	= pcmBuffer. getDataFromBuffer (bi. data (),
 	                                                        bufferSize);
-	   src_data     -> input_frames         = readCount / 2;
-	   src_data     -> output_frames        = outputLimit / 2;
-	   (void) src_process (converter, src_data);
-	   modulateData (bo. data (), src_data -> output_frames_gen, 2);
+	   for (int i = 0; i < readCount / 2; i ++) {
+	      std::complex<float> v = std::complex<float> (4 * bi [2 * i],
+	                                                   4 * bi [2 * i + 1]);
+	      std::complex<float> lbuf [outRate / inRate];	
+	      theFilter. Filter (v, lbuf);	
+	      modulateData ((float *)lbuf, outRate / inRate, 2);
+	   }
+//	   src_data     -> input_frames         = readCount / 2;
+//	   src_data     -> output_frames        = outputLimit / 2;
+//	   (void) src_process (converter, src_data);
+//	   modulateData (bo. data (), src_data -> output_frames_gen, 2);
 	}
 }
 //
@@ -296,9 +304,9 @@ int	i;
 //	and build up the resulting sample
 	      float sym		= lowPass (fabs (symclk) * bit_d);
 	      sample		= 0.50	* lpr +
-	                          0.10	* pilot +
+	                          0.05	* pilot +
 	                          0.40	* lmr * carrier + 
-	                          0.50	* sym * rds_carrier;
+	                          4.90	* sym * rds_carrier;
 
 	      symclk_p	= symclk;
 	   }
@@ -308,7 +316,7 @@ int	i;
 	   else
 	      sample	= preemp (samp_s.l);
 
-	   nextPhase += 4 * sample;
+	   nextPhase += 10 * sample;
 	   if (nextPhase >= 2 * M_PI)
 	      nextPhase -= 2 * M_PI;
 	   if (nextPhase < 0)
