@@ -36,6 +36,7 @@
 #include	"ringbuffer.h"
 #include	"audio-base.h"
 #include	"ringbuffer.h"
+#include	"fir-filters.h"
 #include	<string>
 
 class	plutoHandler;
@@ -140,7 +141,8 @@ public:
 private:
 	RingBuffer<float> pcmBuffer;
 	RingBuffer<char>  rdsBuffer;
-	void	run			(void);
+	LowPassFIR	lowPassFilter;
+	void		run			(void);
 	std::thread	threadHandle;
 	int		inRate;
 	int		outRate;

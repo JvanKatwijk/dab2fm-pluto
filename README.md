@@ -1,11 +1,7 @@
 
 -------------------------------------------------------------------------
-Pluto gadget: dab-pluto-fm,  from DAB(+) to  stereo FM using the Pluto
+Pluto gadget: dab2fm,  from DAB(+) to  stereo FM using the Pluto
 -------------------------------------------------------------------------
-
----------------------------------------------------------------------------
-THIS SOFTWARE IS EXPERIMENTAL AND NOT YET COMPLETE
----------------------------------------------------------------------------
 
 For the real hobbyist, nothing is better than the sound of an old(er) radio,
 preferably one with tubes in a nice, wooden cabinet.
@@ -65,10 +61,10 @@ The parameters are mostly as in the examples for dab-cmdline,
 
 	a. -C for the specification of the channel;
 	b. -P for the specification of the audio service;
-	c. -G for setting the gain, or
-	d. -Q for setting the agc;
+	c. -G for setting the gain of the input device, or
+	d. -Q for setting the agc of the input device;
 	e. -F for setting the output frequency (in KHz).
-	f. -S for audio out next to transmitting the audio
+	f. -S for audio out next to transmitting the audio (default off).
 
 Other parameters are
 
@@ -93,5 +89,30 @@ Note that to support the pluto, one needs to have installed
 	b. libad9361
 
 Note that the version of libad9361 that is supported on older Linux distros
-is an incomplete one.'
+is an **incomplete** one.
+
+--------------------------------------------------------------------------
+Technical details
+--------------------------------------------------------------------------
+
+The output of the DAB decoder is 48000 samples/second, an FM constellation
+is built on 192000 Hz. The first step is filtering the audio signal
+so it is limited to 15 Khz.
+The second step is upsampling to 192 Khz (with filtering), which happily is a multiple of
+48000.
+Then the signal is built (all computations with I/Q samples)
+
+	The leftchannel + right channel signals on an IF 0;
+
+	the Pilot signal on 19 Khz;
+
+	the difference, i.e. left channel - right channel, modulated on a
+	38 Khz carrier (twice the pilot);
+
+	the RDS signal modulated on a 57 KHz signal (three times the pilot)
+
+The resulting signal is then upsampled (with filtering) to 2112000.
+The Pluto can handle samplerates from app 2083000 and higher and 2112000 is a
+nice multiple of 192000.
+
 

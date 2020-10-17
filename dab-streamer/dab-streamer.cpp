@@ -4,20 +4,20 @@
  *    Jan van Katwijk (J.vanKatwijk@gmail.com)
  *    Lazy Chair Computer
  *
- *    This file is part of the dab-fm streamer
+ *    This file is part of dab-2-fm
  *
- *    dab-fm streamer is free software; you can redistribute it and/or modify
+ *    dab-2-fm is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
  *    the Free Software Foundation; either version 2 of the License, or
  *    (at your option) any later version.
  *
- *    dab-fm streamer is distributed in the hope that it will be useful,
+ *    dab-2-fm is distributed in the hope that it will be useful,
  *    but WITHOUT ANY WARRANTY; without even the implied warranty of
  *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *    GNU General Public License for more details.
  *
  *    You should have received a copy of the GNU General Public License
- *    along with dab-fm streamer; if not, write to the Free Software
+ *    along with dab-2-fm; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *      rds encoding is heavily based on the "fmstation"
@@ -29,8 +29,8 @@
 #include        <signal.h>
 #include        <stdlib.h>
 #include        <stdint.h>
-#include	<sndfile.h>
-#include	<samplerate.h>
+//#include	<sndfile.h>
+//#include	<samplerate.h>
 #include	<math.h>
 #include	<atomic>
 #include	<sys/time.h>
@@ -51,7 +51,8 @@ struct timeval  tv;
 	                                  int		outRate,
 	                                  plutoHandler	*generator):
 	                                    pcmBuffer (8 * 32768),
-	                                    rdsBuffer (256) {
+	                                    rdsBuffer (256),
+	                                    lowPassFilter (9, 15000, inRate) {
 
 	this	-> inRate		= inRate;
 	this	-> outRate		= outRate;
@@ -108,9 +109,18 @@ void	dabStreamer::stop (void) {
 }
 
 void	dabStreamer::audioOutput (float *v, int amount) {
+float lBuffer [2 * amount];
+
 	while (pcmBuffer. GetRingBufferWriteAvailable () < 2 * amount)
 	   usleep (400);
-	pcmBuffer. putDataIntoBuffer (v, 2 * amount);
+	for (int i = 0; i < amount; i ++) {
+	   std::complex<float> x = std::complex<float> (v [2 * i],
+	                                                v [2 * i + 1]);
+	   x	= lowPassFilter. Pass (x);
+	   lBuffer [2 * i] = real (x);
+	   lBuffer [2 * i + 1] = imag (x);
+	}
+	pcmBuffer. putDataIntoBuffer (lBuffer, 2 * amount);
 }
 
 void	dabStreamer::addRds (const char *v) {
@@ -122,31 +132,9 @@ void	dabStreamer::addRds (const char *v) {
 
 void	dabStreamer::run (void) {
 int32_t outputLimit     = 2 * outRate / 5;	// in single values
-double  ratio		= (double)outRate / inRate;
-int     bufferSize;
-std::vector<float>      bi (0);
-std::vector<float>      bo (0);
-int     error;
-upFilter	theFilter (15, inRate, outRate);
+upFilter	theFilter (11, inRate, outRate);
 uint64_t        nextStop;
-SRC_STATE       *converter =
-	                src_new (SRC_LINEAR, 2, &error);
-//	                src_new (SRC_SINC_MEDIUM_QUALITY, 2, &error);
-SRC_DATA        *src_data =
-	                new SRC_DATA;
 
-	if (converter == NULL) {
-	   fprintf (stderr, "error creating a converter %d\n", error);
-	   return;
-	}
-
-	bufferSize	= ceil (outputLimit / ratio);
-	bi. resize (bufferSize);
-	bo. resize (outputLimit);
-	fprintf (stderr,
-	        "Starting converter with ratio %f (in %d, out %d)\n",
-	                                              ratio, inRate, outRate);
-//
 //	the rds text will be the name of the file that is being played
 	rds_info.	pi	= 0x10f0;
 	rds_info.	af [0]	= 0xE210;
@@ -160,12 +148,8 @@ SRC_DATA        *src_data =
 	group		= rds_group_schedule ();
 
 	running. store (true);
-	src_data -> data_in          = bi. data ();
-	src_data -> data_out         = bo. data ();
-	src_data -> src_ratio        = ratio;
-	src_data -> end_of_input     = 0;
-	nextStop                     = getMyTime () + (bufferSize / 96000) * 48000 * 1000000;
 
+	float	lBuf [inRate / 5];
 	while (running. load ()) {
 	   int  readCount;
 //	   uint64_t currentTime      = getMyTime ();
@@ -185,21 +169,16 @@ SRC_DATA        *src_data =
 	      group	= rds_group_schedule ();
 	   }
 
-	   while (pcmBuffer. GetRingBufferReadAvailable () < bufferSize)
-	      usleep (1000);
-	   readCount	= pcmBuffer. getDataFromBuffer (bi. data (),
-	                                                        bufferSize);
+	   while (pcmBuffer. GetRingBufferReadAvailable () < inRate / 10)
+	      usleep (5000);
+	   readCount	= pcmBuffer. getDataFromBuffer (lBuf, inRate / 10);
 	   for (int i = 0; i < readCount / 2; i ++) {
-	      std::complex<float> v = std::complex<float> (4 * bi [2 * i],
-	                                                   4 * bi [2 * i + 1]);
+	      std::complex<float> v = std::complex<float> (4 * lBuf [2 * i],
+	                                                   4 * lBuf [2 * i + 1]);
 	      std::complex<float> lbuf [outRate / inRate];	
 	      theFilter. Filter (v, lbuf);	
 	      modulateData ((float *)lbuf, outRate / inRate, 2);
 	   }
-//	   src_data     -> input_frames         = readCount / 2;
-//	   src_data     -> output_frames        = outputLimit / 2;
-//	   (void) src_process (converter, src_data);
-//	   modulateData (bo. data (), src_data -> output_frames_gen, 2);
 	}
 }
 //
@@ -306,7 +285,7 @@ int	i;
 	      sample		= 0.50	* lpr +
 	                          0.05	* pilot +
 	                          0.40	* lmr * carrier + 
-	                          8.90	* sym * rds_carrier;
+	                          11.00	* sym * rds_carrier;
 
 	      symclk_p	= symclk;
 	   }

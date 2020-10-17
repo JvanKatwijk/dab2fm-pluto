@@ -181,6 +181,7 @@ set (PLUTOSDR_RXTX true)
 	     ./support/fft_handler.h
 	     ./support/dab-params.h
 	     ./support/up-filter.h
+	     ./support/fir-filters.h
 	     ./support/viterbi-spiral/viterbi-spiral.h
 	)
 
@@ -224,6 +225,7 @@ set (PLUTOSDR_RXTX true)
 	     ./support/fft_handler.cpp
 	     ./support/dab-params.cpp
 	     ./support/up-filter.cpp
+	     ./support/fir-filters.cpp
 	     ./support/viterbi-spiral/viterbi-spiral.cpp
 	)
 
