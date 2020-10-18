@@ -142,7 +142,8 @@ set (PLUTOSDR_RXTX true)
 	set (${objectName}_HDRS
 	     ${${objectName}_HDRS}
 	     ./dab-constants.h
-	     ./dab-api.h
+	     ./dab-api.h	
+	     ./locking-queue.h
 	     ./audio-sink/audio-base.h
 	     ./audio-sink/audiosink.h
 	     ./audio-sink/newconverter.h

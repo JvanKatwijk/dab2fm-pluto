@@ -33,6 +33,7 @@
 #include	"dab-processor.h"
 #include	"band-handler.h"
 #include	"ringbuffer.h"
+#include	"locking-queue.h"
 #include	"pluto-handler.h"
 #include	"dab-streamer.h"
 #include	<locale>
@@ -41,6 +42,20 @@
 #include	<string>
 using std::cerr;
 using std::endl;
+
+//
+//	availability of audio is signalled by an "event"
+typedef struct {
+	int key;
+	std::string string;
+} message;
+
+static
+lockingQueue<message>messageQueue;
+
+#define	S_QUIT		0100
+#define	S_NEW_AUDIO	0101
+#define	S_NEW_DYNAMICLABEL	0102
 
 void    printOptions (void);	// forward declaration
 //	we deal with callbacks from different threads. So, if you extend
@@ -130,7 +145,14 @@ void	programdataHandler (audiodata *d, void *ctx) {
 //	a string, the so-called dynamic label
 static
 void	dynamicLabelHandler (std::string dynamicLabel, void *ctx) {
-	(void)ctx;
+message m;
+        m. key          = S_NEW_DYNAMICLABEL;
+        m. string       = dynamicLabel;
+        messageQueue. push (m);
+}
+
+static
+void	handle_dynamicLabel	(std::string dynamicLabel) {
 	streamerOut	-> addRds (dynamicLabel. c_str ());
 	std::cerr << dynamicLabel << "\r";
 }
@@ -147,6 +169,14 @@ void	motdataHandler (std::string s, int d, void *ctx) {
 //
 static
 void	audioOutHandler (int rate, void *ctx) {
+        message m;
+        m. key          = S_NEW_AUDIO;
+        m. string       = to_string (rate);
+        messageQueue. push (m);
+}
+
+static
+void	pcmHandler	(int rate) {
 static bool isStarted	= false;
 
 	if (!isStarted) {
@@ -366,7 +396,23 @@ RingBuffer<std::complex<float>> _I_Buffer (16 * 32768);
 	while (run. load () && (theDuration != 0)) {
 	   if (theDuration > 0)
 	      theDuration --;
-	   sleep (1);
+	   while (run. load ()) {
+	      message m;
+	      while (!messageQueue. pop (1000, &m));
+	      switch (m. key) {
+	         case S_NEW_AUDIO:
+	            pcmHandler (std::stoi (m. string));
+	            break;
+
+	         case S_NEW_DYNAMICLABEL:
+	            handle_dynamicLabel	(m. string);
+	            break;
+
+	         case S_QUIT:
+	            run. store (false);
+	            break;
+	      }
+	   }
 	}
 	theRadio	-> stop ();
 	theDevice	-> stopReader ();
