@@ -32,6 +32,7 @@
   */
 
 	dabProcessor::dabProcessor	(RingBuffer<std::complex<float>> *buffer,
+	                                 RingBuffer<std::complex<int16_t>> *pcmBuffer,
 	                                 callbacks	*the_callBacks,
 	                                 void		*userData):
 	                                    params (1),
@@ -43,6 +44,7 @@
 	                                                   the_callBacks,
 	                                                   userData),
 	                                    my_mscHandler  (1,
+	                                                    pcmBuffer,
 	                                                    the_callBacks,
                                                             userData) {
 	this	-> the_callBacks	= the_callBacks;

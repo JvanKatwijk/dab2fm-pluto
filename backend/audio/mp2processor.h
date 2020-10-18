@@ -50,12 +50,14 @@ struct quantizer_spec {
 class	mp2Processor: public backendBase {
 public:
 			mp2Processor	(int16_t,
+	                                 RingBuffer<std::complex<int16_t>> *,
 	                                 callbacks	*,
 	                                 void		*);
 			~mp2Processor	(void);
 	void		addtoFrame	(uint8_t *);
 	
 private:
+	RingBuffer<std::complex<int16_t>> *pcmBuffer;
 	callbacks	*the_callBacks;
 	void		*ctx;
 	int16_t		bitRate;

@@ -108,12 +108,15 @@ void	WriteAudioMuxLengthBytes () {
   */
 
 	mp4Processor::mp4Processor (int16_t		bitRate,
+	                            RingBuffer<std::complex<int16_t>> *pcmBuffer,
 	                            callbacks		*the_callBacks,
 	                            void		*ctx):
 	                                  my_padHandler (the_callBacks,
 	                                                 ctx),
 	                                  my_rsDecoder (8, 0435, 0, 1, 10),
-	                                  aacDecoder (the_callBacks, ctx) {
+	                                  aacDecoder (pcmBuffer,
+	                                              the_callBacks,
+	                                              ctx) {
 
 	this	-> bitRate	= bitRate;	// input rate
 	this	-> the_callBacks	= the_callBacks;

@@ -52,7 +52,7 @@ struct timeval  tv;
 	                                  plutoHandler	*generator):
 	                                    pcmBuffer (8 * 32768),
 	                                    rdsBuffer (256),
-	                                    lowPassFilter (9, 15000, inRate) {
+	                                    lowPassFilter (11, 15000, inRate) {
 
 	this	-> inRate		= inRate;
 	this	-> outRate		= outRate;
@@ -132,7 +132,7 @@ void	dabStreamer::addRds (const char *v) {
 
 void	dabStreamer::run (void) {
 int32_t outputLimit     = 2 * outRate / 5;	// in single values
-upFilter	theFilter (11, inRate, outRate);
+upFilter	theFilter (15, inRate, outRate);
 uint64_t        nextStop;
 
 //	the rds text will be the name of the file that is being played

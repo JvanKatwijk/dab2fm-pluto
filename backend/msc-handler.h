@@ -47,6 +47,7 @@ using namespace std;
 class mscHandler {
 public:
 			mscHandler		(uint8_t,
+	                                         RingBuffer<std::complex<int16_t>> *,
 	                                         callbacks	*,
 	                                 	 void		*);
 			~mscHandler		(void);
@@ -59,6 +60,7 @@ public:
 	void		start			(void);
 private:
 virtual	void		run			(void);
+	RingBuffer<std::complex<int16_t>> *pcmBuffer;
 	void		process_mscBlock	(std::vector<int16_t>,
 	                                                      int16_t);
 	dabParams	params;

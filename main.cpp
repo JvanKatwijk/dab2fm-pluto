@@ -60,6 +60,9 @@ std::atomic<bool>timesyncSet;
 static
 std::atomic<bool> localSound;
 static
+RingBuffer<std::complex<int16_t>> pcmBuffer (32768);
+
+static
 std::atomic<bool>ensembleRecognized;
 
 static
@@ -143,19 +146,20 @@ void	motdataHandler (std::string s, int d, void *ctx) {
 
 //
 static
-void	audioOutHandler (int16_t *buffer, int size, int rate,
-	                              bool isStereo, void *ctx) {
+void	audioOutHandler (int rate, void *ctx) {
 static bool isStarted	= false;
 
-	streamerOut	-> audioOut (buffer, size, rate);
-	if (!localSound. load ());
-	   return;
-	(void)isStereo;
 	if (!isStarted) {
 	   soundOut	-> restart ();
 	   isStarted	= true;
 	}
-//	soundOut	-> audioOut (buffer, size, rate);
+	int16_t lbuf [1024];
+	while (pcmBuffer. GetRingBufferReadAvailable () > 1024 / 2) {
+	   pcmBuffer. getDataFromBuffer ((std::complex<int> *)lbuf, 512);
+	   streamerOut	-> audioOut (lbuf, 1024, rate);
+	   if (localSound. load ())
+	      soundOut	-> audioOut (lbuf, 1024, rate);
+	}
 }
 
 int	main (int argc, char **argv) {
@@ -202,6 +206,7 @@ RingBuffer<std::complex<float>> _I_Buffer (16 * 32768);
 
 	      case 'S':
 	         localSound. store (true);
+	         fprintf (stderr, "local sound is ON\n");
 	         break;
 
 	      case 'D':
@@ -295,6 +300,7 @@ RingBuffer<std::complex<float>> _I_Buffer (16 * 32768);
 //
 //	and with a sound device we now can create a "backend"
 	theRadio	= new dabProcessor (&_I_Buffer,
+	                                    &pcmBuffer,
 	                                    &the_callBacks,
 	                                    nullptr		// Ctx
 	                          );

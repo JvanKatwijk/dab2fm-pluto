@@ -218,6 +218,7 @@ struct quantizer_spec quantizer_table [17] = {
 ////////////////////////////////////////////////////////////////////////////////
 
 	mp2Processor::mp2Processor (int16_t		bitRate,
+	                            RingBuffer<std::complex<int16_t>> *pcmBuffer,
 	                            callbacks		*the_callBacks,
 	                            void		*ctx):
 	                                       my_padHandler (the_callBacks,
@@ -225,7 +226,10 @@ struct quantizer_spec quantizer_table [17] = {
 int16_t	i, j;
 int16_t *nPtr = &N [0][0];
 
-	this	-> ctx	= ctx;
+	this	-> bitRate	= bitRate;
+	this	-> pcmBuffer	= pcmBuffer;
+	this	-> the_callBacks	= the_callBacks;
+	this	-> ctx		= ctx;
 	// compute N[i][j]
 	for (i = 0;  i < 64;  i ++)
 	   for (j = 0;  j < 32;  ++j)
@@ -238,8 +242,6 @@ int16_t *nPtr = &N [0][0];
 	   for (j = 1023;  j >= 0;  j--)
 	      V [i][j] = 0;
 
-	this	-> bitRate	= bitRate;
-	this	-> the_callBacks	= the_callBacks;
 	Voffs		= 0;
 	baudRate	= 48000;	// default for DAB
 	MP2framesize	= 24 * bitRate;	// may be changed
@@ -643,7 +645,10 @@ uint8_t	newbyte = (01 << bitnr);
 }
 
 void	mp2Processor::output (int16_t *buffer, int size, int rate, bool stereo) {
-	if (the_callBacks -> audioOutHandler != nullptr)
-	   the_callBacks -> audioOutHandler (buffer, size, rate, stereo, ctx);
+	if (the_callBacks -> audioOutHandler == nullptr)
+	   return;
+	pcmBuffer	-> putDataIntoBuffer ((std::complex<int16_t> *)buffer,
+	                                          size / 2);
+	the_callBacks	-> audioOutHandler (rate, ctx);
 }
 

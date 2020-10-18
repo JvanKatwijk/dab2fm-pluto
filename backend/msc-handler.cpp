@@ -41,12 +41,14 @@ int16_t	cifVector [55296];
 static int blocksperCIF [] = {18, 72, 0, 36};
 
 		mscHandler::mscHandler	(uint8_t	dabMode,
+	                                 RingBuffer<std::complex<int16_t>>* pcmBuffer,
 	                                 callbacks	*the_callBacks,
 	                                 void		*userData):
 	                                    params (dabMode),
 	                                    my_fftHandler (dabMode),
 	                                    myMapper (dabMode),
 	                                    freeSlots (params. get_L ()) {
+	this	-> pcmBuffer		= pcmBuffer;
 	this	-> the_callBacks	= the_callBacks;
 	this	-> userData		= userData;
 	theData				= new std::complex<float> *[params. get_L ()];
@@ -167,6 +169,7 @@ void	mscHandler::set_audioChannel (audiodata *d) {
 //
 //	we could assert here that theBackend == nullptr
 	theBackends. push_back (new audioBackend (d,
+	                                          pcmBuffer,
 	                                          the_callBacks,
 	                                          userData));
 	mutexer. unlock ();

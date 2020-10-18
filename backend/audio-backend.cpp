@@ -38,6 +38,7 @@
 //
 //	fragmentsize == Length * CUSize
 	audioBackend::audioBackend	(audiodata	*d,
+	                                 RingBuffer<std::complex<int16_t>> *pcmBuffer,
 	                                 callbacks	*the_callBacks,
 	                                 void		*ctx):
 	                                     virtualBackend (d -> startAddr,
@@ -72,11 +73,13 @@ int32_t i, j;
 	                        shortForm ? "uep_protection" : "eep_protection");
 	if (dabModus == DAB) 
 	   our_backendBase = new mp2Processor (bitRate,
+	                                       pcmBuffer,
 	                                       the_callBacks,
 	                                       ctx);
 	else
 	if (dabModus == DAB_PLUS) 
 	   our_backendBase = new mp4Processor (bitRate,
+	                                       pcmBuffer,
 	                                       the_callBacks,
 	                                       ctx);
 	else		// cannot happen

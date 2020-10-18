@@ -93,10 +93,7 @@ typedef	struct {
 //
 //	after selecting an audio program, the audiooutput, packed
 //	as PCM data (always two channels) is sent back
-	typedef void (*audioOut_t)(int16_t *,		// buffer
-	                           int,			// size
-	                           int,			// samplerate
-	                           bool,		// stereo
+	typedef void (*audioOut_t)(int,			// samplerate
 	                           void *);
 //
 //	dynamic label data, embedded in the audio stream, is sent as string

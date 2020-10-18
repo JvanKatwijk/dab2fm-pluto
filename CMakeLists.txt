@@ -209,6 +209,7 @@ set (PLUTOSDR_RXTX true)
 	     ./backend/msc-handler.cpp
 	     ./backend/virtual-backend.cpp
 	     ./backend/audio-backend.cpp
+	     ./backend/audio/faad-decoder.cpp
 	     ./backend/audio/mp4processor.cpp 
 	     ./backend/audio/mp2processor.cpp 
 	     ./backend/data/virtual-datahandler.cpp 

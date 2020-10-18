@@ -42,6 +42,7 @@
 class	mp4Processor : public backendBase {
 public:
 			mp4Processor	(int16_t,
+	                                 RingBuffer<std::complex<int16_t>> *,
 	                                 callbacks	*,
 	                                 void	*);
 			~mp4Processor	(void);

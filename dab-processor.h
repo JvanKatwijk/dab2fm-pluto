@@ -48,6 +48,7 @@ class	deviceHandler;
 class dabProcessor {
 public:
 		dabProcessor  	(RingBuffer<std::complex<float>> *,
+	                         RingBuffer<std::complex<int16_t>> *,
 	                         callbacks	*,
 	                         void	*);
 	virtual ~dabProcessor	(void);
